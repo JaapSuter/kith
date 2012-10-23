@@ -5,7 +5,7 @@ server = express()
 server.use(express.logger())
 
 server.get('/', (req, rsp) ->
-  rsp.send 'Hello All Banana!'
+  rsp.send 'Hello All Apple!'
 )
 
 port = process.env.PORT || 5000

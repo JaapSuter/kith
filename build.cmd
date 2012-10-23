@@ -1,7 +1,5 @@
 @echo off
-cd /d %~dp0\src
-start python -m http.server 80 -new_console
-cd /d %~dp0
+supervisor src/server/server.js
 
 rem email read_requests read_friendlists 
 rem user_groups user_events user_hometown user_interests user_likes user_photos user_relationships user_relationship_details user_subscriptions user_videos
