@@ -1,0 +1,126 @@
+﻿@import "lib/normalize";
+@import "lib/sass-twitter-bootstrap/lib/bootstrap";
+@import "lib/css3-microsoft-modern-buttons/css/m-styles.min";
+
+@import "fonts";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;  
+  min-height: 100%;
+}
+
+body {
+  max-width: 50em;  
+  width: 100%;
+  min-height: 100%;
+  margin: 1em auto;
+  font-family: lucida grande, tahoma, verdana, arial, sans-serif;
+  line-height: 1.5;
+  font-size: 1em;
+}
+
+a, button {
+  cursor: pointer;
+}
+
+$color-kith-dark: #a11;
+$color-kith-light: #fcd;
+
+$color-facebook-blue-light: #f7f7f7;
+$color-facebook-blue-dark: #3b5998;
+
+$color-facebook-faded-blue-pic: #d8dfea;
+$color-facebook-pic: #afbdd4;
+$color-facebook-subheader: #6d84b4;
+$color-facebook-blue: #3b5998;
+
+.kith-icon-f:before { content: 'f'; }
+.kith-icon-k:before { content: 'k'; }
+
+[class^="kith-icon-"]:before,
+[class*="kith-icon-"]:before {
+  font-family: fk-icons, sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 2em;
+  line-height: 0;
+  vertical-align: middle;
+  padding: 0 0.2em 0 0;  
+}
+
+/*
+.clearfix {
+	overflow: hidden;
+}
+
+.kith-vertical-pad {
+  padding: 3em 0;
+}
+
+.kith-center-block-wrap {
+  height: 3em;
+  float: left;
+  position: relative;
+  left: 50%;
+  &:after { display:block; clear: both; }
+
+  .kith-center-block-content {
+    float: left;
+    position: relative;
+    left: -50%;
+
+    & > * {
+      display: block;
+      float: left;
+    }
+
+    & > * {
+      font-size: 1em;
+      height: 3em;
+      border: 0;
+      padding: 0 0.5em;
+      margin: 0;
+    }
+  }  
+}
+/*
+
+label { line-height: 3em; background-color: transparent; color: $color-kith-dark; }
+input[type=password] { background-color: $color-kith-light; color: $color-kith-dark; outline-width: 1px; }
+button {
+  border: none;
+  font-size: inherit;
+  height: inherit;
+  padding: 0 0.5em;
+  background-color: $color-kith-dark;
+  color: $color-kith-light;
+  &:hover, &:focus {
+    background-color: darken($color-kith-dark, 10);
+    color: lighten($color-kith-light, 10);
+  }
+}
+
+.kith-center-vertically {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+a.kith-a-as-button { text-decoration: none; background-color: $color-kith-dark; color: $color-kith-light; }
+
+#kith-facebook-auth {
+  float: left;
+
+  & > * { display: none; float: left; }
+  &.processing { .processing { display: block; background-color: transparent; color: #112; line-height: 3em; vertical-align: middle; } img { height: 100%; width: auto; } }
+  &.connect { .connect { display: block; } }
+  &.disconnect { .disconnect { display: block; } }
+
+  button { color: $color-facebook-blue-light; background-color: $color-facebook-blue-dark; }
+}
+
+*/

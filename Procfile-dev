@@ -1,0 +1,2 @@
+web: nodemon --legacy-watch --delay 3 server/app.js
+

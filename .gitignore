@@ -1,3 +1,4 @@
 *.suo
 Thumbs.db
 obj/
+npm-debug.log

@@ -1,2 +1,0 @@
-window.foobar = ->
-  alert 'fdas'

@@ -5,11 +5,18 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9CCAE7C2-EA92-4C1A-88B5-7FB6EE19B666}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Kith</RootNamespace>
     <AssemblyName>Kith</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -22,11 +29,98 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
-    <None Include="build.cmd" />
+    <None Include="src\client\_bootstrap.coffee" />
+    <None Include="src\client\lib\loader.coffee" />
+    <None Include="src\client\lib\bacon.coffee" />
+    <None Include="src\client\lib\bacon.ui.coffee" />
+    <None Include="src\client\public\fonts\fk-icons.eot" />
+    <None Include="src\client\public\fonts\fk-icons.ttf" />
+    <None Include="src\client\public\fonts\fk-icons.woff" />
+    <None Include="src\client\scss\head.scss" />
+    <None Include="src\client\scss\_fonts.scss" />
+    <None Include="Procfile-dev" />
+    <None Include="package.json" />
+    <None Include="Procfile" />
+    <None Include="README.md" />
+    <None Include="src\client\_login.coffee" />
+    <None Include="src\client\index.coffee" />
+    <None Include="src\client\layouts\html.jade" />
+    <None Include="src\client\views\index.jade" />
+    <None Include="src\common\sha1.coffee" />
+    <CoffeeScript Include="src\common\utils.coffee" />
+    <None Include="src\server\app.coffee" />
+    <None Include="src\server\glue.coffee" />
+    <None Include="src\server\utils.coffee" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="src\client\index.js">
+      <DependentUpon>index.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\client\lib\bacon.js">
+      <DependentUpon>bacon.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\client\lib\bacon.ui.js">
+      <DependentUpon>bacon.ui.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\client\lib\loader.js">
+      <DependentUpon>loader.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\client\public\channel.html" />
+    <Content Include="src\client\public\css\head.css" />
+    <Content Include="src\client\public\img\glyphicons-halflings-white.png" />
+    <Content Include="src\client\public\img\glyphicons-halflings.png" />
+    <Content Include="src\client\public\img\syncfusion-icons-white.png" />
+    <Content Include="src\client\public\img\syncfusion-icons.png" />
+    <Content Include="src\client\scss\head.css">
+      <DependentUpon>head.scss</DependentUpon>
+    </Content>
+    <Content Include="src\client\_bootstrap.js">
+      <DependentUpon>_bootstrap.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\client\_login.js">
+      <DependentUpon>_login.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\common\sha1.js">
+      <DependentUpon>sha1.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\common\utils.js">
+      <DependentUpon>utils.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\server\app.js">
+      <DependentUpon>app.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\server\glue.js">
+      <DependentUpon>glue.coffee</DependentUpon>
+    </Content>
+    <Content Include="src\server\utils.js">
+      <DependentUpon>utils.coffee</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\client\inline\" />
+    <Folder Include="src\client\public\js\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

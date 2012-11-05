@@ -1,0 +1,46 @@
+extends ../layouts/html
+  
+block head  
+
+block body
+  noscript.
+      Please enable javascript to use this website.
+    
+  if ! isAuthenticated
+    if message && message.length > 0
+      p #{message}
+  
+    .m-input-prepend.m-input-append
+      label.add-on(for='kith-login-password') Password: 
+      input#kith-login-password.m-wrap.m-ctrl-small(size="12", type="password", data-nonce='#{nonce}', value='ken sent me')
+      a#kith-login-button.m-btn.red(href="#")
+        i.kith-icon-k
+        | Login
+  
+    form#kith-login-form(action='/login', method='post')
+      input(type='hidden', name='cnonce')
+      input(type='hidden', name='hash')
+
+    | <script>
+    include ../inline/_login.js
+    | </script>
+  else
+    #fb-root
+
+    .m-btn-group
+      a#kith-logout-button.m-btn.red(href='/logout')
+        i.kith-icon-k
+        | Logout
+
+      a#kith-facebook-auth.m-btn.grey(disabled)
+        i.kith-icon-f
+        span.kith-caption Updating Facebook Status
+
+    div#kith-facebook-friends
+
+  
+    | <script>
+    include ../inline/_bootstrap.js
+    | </script>
+    
+    //- kith.loadWithEvent("//192.168.0.7:35729/livereload.js?snipver=2");
