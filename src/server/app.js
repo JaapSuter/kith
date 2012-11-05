@@ -21,7 +21,7 @@
 
   glue = require(__dirname + '/../server/glue.js');
 
-  glue.render();
+  glue.watch();
 
   strategy = new passloc.Strategy({
     usernameField: 'cnonce',
