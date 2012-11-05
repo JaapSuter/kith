@@ -22,5 +22,5 @@ login.onclick = onLoginSubmit
 password.onkeydown = (e) ->
   enterKeyCode = 13
   if e.keyCode == enterKeyCode
-    onLoginSubmit()
+    onLoginSubmit(e)
 

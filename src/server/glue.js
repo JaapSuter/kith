@@ -1,13 +1,15 @@
 (function() {
   "use strict";
 
-  var Glue, bootstrap, common, fs, index, login, minify, opts, renderer, uglify;
+  var Glue, bootstrap, common, css, cssify, fs, index, login, minify, opts, renderer, uglify;
 
   Glue = require('gluejs');
 
-  fs = require('fs');
+  fs = require('fs-extra');
 
   uglify = require('uglify-js2');
+
+  cssify = require('clean-css');
 
   opts = 'development' === process.env.NODE_ENV ? {
     minify: false,
@@ -15,6 +17,29 @@
   } : {
     minify: true,
     sourceUrls: false
+  };
+
+  css = {
+    src: __dirname + "/../client/scss/head.css",
+    dst: __dirname + "/../client/public/css/head.css",
+    render: function() {
+      if (opts.minify) {
+        fs.writeFileSync(__dirname + ("/../client/" + dir + "/" + name + ".js"), glued);
+        return fs.readFile(this.src, function(css) {
+          return fs.writeFile(this.dst, cssify.process(css));
+        });
+      } else {
+        return fs.copy(this.src, this.dst);
+      }
+    },
+    watch: function() {
+      var _this = this;
+      this.render();
+      return fs.watch(this.src, function(event, filename) {
+        console.log('Updating: ' + filename);
+        return _this.render();
+      });
+    }
   };
 
   minify = function(code) {
@@ -51,12 +76,14 @@
     watch: function() {
       login.watch(renderer('_login'));
       bootstrap.watch(renderer('_bootstrap'));
-      return index.watch(renderer('index'));
+      index.watch(renderer('index'));
+      return css.watch();
     },
     render: function() {
       login.render(renderer('_login'));
       bootstrap.render(renderer('_bootstrap'));
-      return index.render(renderer('index'));
+      index.render(renderer('index'));
+      return css.render();
     }
   };
 

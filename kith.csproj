@@ -33,6 +33,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".env" />
+    <None Include=".env-dev" />
+    <None Include="dev.cmd" />
     <None Include="src\client\_bootstrap.coffee" />
     <None Include="src\client\lib\loader.coffee" />
     <None Include="src\client\lib\bacon.coffee" />

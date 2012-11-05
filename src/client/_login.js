@@ -28,7 +28,7 @@
     var enterKeyCode;
     enterKeyCode = 13;
     if (e.keyCode === enterKeyCode) {
-      return onLoginSubmit();
+      return onLoginSubmit(e);
     }
   };
 
