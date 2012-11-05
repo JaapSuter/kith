@@ -4,7 +4,10 @@ Glue = require 'gluejs'
 fs = require 'fs'
 uglify = require 'uglify-js2'
 
-opts = 
+opts = if 'production' == process.env.NODE_ENV
+  minify: false
+  sourceUrls: true
+else
   minify: true
   sourceUrls: false
 

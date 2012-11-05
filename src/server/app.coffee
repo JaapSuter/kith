@@ -10,7 +10,10 @@ uniqueId = require(__dirname + '/../common/utils.js').uniqueId
 getLocalIPv4s = require(__dirname + '/../server/utils.js').getLocalIPv4s
 glue = require(__dirname + '/../server/glue.js')
 
-glue.watch()
+if 'development' == app.get('env')
+  glue.watch()
+else
+  glue.render()
 
 strategy = new passloc.Strategy(
   usernameField: 'cnonce',
@@ -38,7 +41,6 @@ passport.deserializeUser (id, done) -> done null, 'guest'
 passport.use(strategy)
 
 app = express()
-
 app.set('views', __dirname + '/../client/views');
 
 app.use express.logger()
@@ -52,19 +54,22 @@ app.use passport.initialize()
 app.use passport.session()
 app.use app.router
 app.use express.static(__dirname + '/../client/public')
-app.use express.errorHandler()
 
-app.configure('development', ->
-  app.use(exerr.express3(contextLinesCount: 3))
-)
+if 'development' == app.get('env')
+  app.use(exerr.express3(contextLinesCount: 5))
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
+if 'production' == app.get('env')
+  app.use express.errorHandler()
+   
 localIPv4 = do (localIPv4s = getLocalIPv4s()) -> localIPv4s[localIPv4s.length - 1]
 
 app.get '/', (req, res) -> 
   res.render 'index.jade',
     isAuthenticated: req.isAuthenticated()
-    message: req.flash('error')
-    nonce: if req.isAuthenticated() then null else strategy.openNonce()    
+    error: req.flash('error')
+    nonce: if req.isAuthenticated() then null else strategy.openNonce()
+    env: app.get('env')
 
 app.post '/login',  
   passport.authenticate 'local',
@@ -78,6 +83,5 @@ app.get '/logout', (req, res) ->
 
 port = process.env.PORT || 5000
 
-app.listen(port, () ->
+app.listen port, () ->
   console.log("Listening on " + port)
-)

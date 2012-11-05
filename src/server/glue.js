@@ -9,7 +9,10 @@
 
   uglify = require('uglify-js2');
 
-  opts = {
+  opts = 'production' === process.env.NODE_ENV ? {
+    minify: false,
+    sourceUrls: true
+  } : {
     minify: true,
     sourceUrls: false
   };

@@ -21,7 +21,11 @@
 
   glue = require(__dirname + '/../server/glue.js');
 
-  glue.watch();
+  if ('development' === app.get('env')) {
+    glue.watch();
+  } else {
+    glue.render();
+  }
 
   strategy = new passloc.Strategy({
     usernameField: 'cnonce',
@@ -88,13 +92,19 @@
 
   app.use(express["static"](__dirname + '/../client/public'));
 
-  app.use(express.errorHandler());
-
-  app.configure('development', function() {
-    return app.use(exerr.express3({
-      contextLinesCount: 3
+  if ('development' === app.get('env')) {
+    app.use(exerr.express3({
+      contextLinesCount: 5
     }));
-  });
+    app.use(express.errorHandler({
+      dumpExceptions: true,
+      showStack: true
+    }));
+  }
+
+  if ('production' === app.get('env')) {
+    app.use(express.errorHandler());
+  }
 
   localIPv4 = (function(localIPv4s) {
     return localIPv4s[localIPv4s.length - 1];
@@ -103,8 +113,9 @@
   app.get('/', function(req, res) {
     return res.render('index.jade', {
       isAuthenticated: req.isAuthenticated(),
-      message: req.flash('error'),
-      nonce: req.isAuthenticated() ? null : strategy.openNonce()
+      error: req.flash('error'),
+      nonce: req.isAuthenticated() ? null : strategy.openNonce(),
+      env: app.get('env')
     });
   });
 
