@@ -10,7 +10,7 @@ uniqueId = require(__dirname + '/../common/utils.js').uniqueId
 getLocalIPv4s = require(__dirname + '/../server/utils.js').getLocalIPv4s
 glue = require(__dirname + '/../server/glue.js')
 
-if 'development' == app.get('env')
+if 'development' == process.env.NODE_ENV
   glue.watch()
 else
   glue.render()
