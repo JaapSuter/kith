@@ -22,11 +22,16 @@
   css = {
     src: __dirname + "/../client/scss/head.css",
     dst: __dirname + "/../client/public/css/head.css",
+    cssifyWithUglyWorkAround: function(source) {
+      return cssify.process(source.replace(/charset/g, 'ch_rset')).replace(/ch_rset/g, 'charset');
+    },
     render: function() {
+      var _this = this;
       if (opts.minify) {
-        fs.writeFileSync(__dirname + ("/../client/" + dir + "/" + name + ".js"), glued);
-        return fs.readFile(this.src, function(css) {
-          return fs.writeFile(this.dst, cssify.process(css));
+        return fs.readFile(this.src, 'utf8', function(err, source) {
+          return fs.writeFile(_this.dst, _this.cssifyWithUglyWorkAround(source), 'utf8', function(err) {
+            return console.log('Wrote: ' + _this.dst);
+          });
         });
       } else {
         return fs.copy(this.src, this.dst);
@@ -36,7 +41,6 @@
       var _this = this;
       this.render();
       return fs.watch(this.src, function(event, filename) {
-        console.log('Updating: ' + filename);
         return _this.render();
       });
     }

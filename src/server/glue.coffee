@@ -15,19 +15,22 @@ else
 css = 
   src: __dirname + "/../client/scss/head.css"
   dst: __dirname + "/../client/public/css/head.css"
+
+  cssifyWithUglyWorkAround: (source) ->
+    cssify.process(source.replace /charset/g, 'ch_rset')
+          .replace /ch_rset/g, 'charset'
   
   render: () ->
     if opts.minify
-      fs.writeFileSync(__dirname + "/../client/#{dir}/#{name}.js", glued)
-      fs.readFile @src, (css) ->      
-        fs.writeFile @dst, cssify.process(css)
+      fs.readFile @src, 'utf8', (err, source) =>
+        fs.writeFile @dst, @cssifyWithUglyWorkAround(source), 'utf8', (err) =>
+          console.log 'Wrote: ' + @dst
     else
       fs.copy @src, @dst
 
   watch: () ->
     @render()
     fs.watch @src, (event, filename) =>
-      console.log 'Updating: ' + filename
       @render()
     
 
