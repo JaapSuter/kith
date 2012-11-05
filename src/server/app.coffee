@@ -10,7 +10,7 @@ uniqueId = require(__dirname + '/../common/utils.js').uniqueId
 getLocalIPv4s = require(__dirname + '/../server/utils.js').getLocalIPv4s
 glue = require(__dirname + '/../server/glue.js')
 
-glue.watch()
+glue.render()
 
 strategy = new passloc.Strategy(
   usernameField: 'cnonce',

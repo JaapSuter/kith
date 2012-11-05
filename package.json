@@ -12,8 +12,7 @@
     "glob": "~3.1.14",
     "gluejs": "~0.1.1",
     "uglify-js2": "~2.1.5",
-    "bacon": "0.0.1",
-    "CoffeeScriptRedux": "git://github.com/michaelficarra/CoffeeScriptRedux.git"
+    "bacon": "0.0.1"
   },
   "engines": {
     "node": "0.8.x",
