@@ -7,12 +7,12 @@ html.no-js(lang='en')
       meta(content='IE=edge', http-equiv='X-UA-Compatible')
       meta(content='on', http-equiv='cleartype')
       meta(content='True', name='HandheldFriendly')
-    meta(name='viewport', content='width=device-width')
+    meta(name='viewport', content='width=device-width,initial-scale=1.0,minimum-scale=1.0')
     meta(name='author', content='Jaap Suter')
-    
-    title Kith - #{env}
-    link(href='/css/head.css', rel='stylesheet')    
 
+    title Kith - #{env}
+    link(href=getHashedUrl('/css/head.css'), rel='stylesheet')    
+    
     block head
   body
     block body

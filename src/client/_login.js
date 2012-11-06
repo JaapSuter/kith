@@ -18,7 +18,7 @@
     cnonce = uniqueId(nonce.length);
     form = document.getElementById('kith-login-form');
     form.cnonce.value = cnonce;
-    form.hash.value = sha1(nonce + password.value + cnonce);
+    form.hash.value = sha1(nonce + sha1(password.value + cnonce));
     return form.submit();
   };
 

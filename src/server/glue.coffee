@@ -4,6 +4,9 @@ Glue = require 'gluejs'
 fs = require 'fs-extra'
 uglify = require 'uglify-js2'
 cssify = require 'clean-css'
+crypto = require 'crypto'
+path = require 'path'
+glob = require 'glob'
 
 opts = if 'development' == process.env.NODE_ENV
   minify: false
@@ -11,6 +14,19 @@ opts = if 'development' == process.env.NODE_ENV
 else
   minify: true
   sourceUrls: false
+
+hashify = (file, contents) ->
+  md5 = crypto.createHash('md5').update(contents).digest('hex')
+  
+  ext = path.extname file
+  stem = path.join path.dirname(file), path.basename(file, ext)
+
+  for prev in glob.sync(stem + "-*" + ext)
+    fs.unlinkSync prev
+
+  file =  stem + '-' + md5 + ext
+  fs.writeFileSync file, contents, 'utf8', (err) =>
+    console.log "Wrote: #{file}"
 
 css = 
   src: __dirname + "/../client/scss/head.css"
@@ -21,12 +37,11 @@ css =
           .replace /ch_rset/g, 'charset'
   
   render: () ->
-    if opts.minify
-      fs.readFile @src, 'utf8', (err, source) =>
-        fs.writeFile @dst, @cssifyWithUglyWorkAround(source), 'utf8', (err) =>
-          console.log 'Wrote: ' + @dst
-    else
-      fs.copy @src, @dst
+    fs.readFile @src, 'utf8', (err, source) =>
+      if opts.minify  
+        hashify @dst, @cssifyWithUglyWorkAround(source)
+      else
+        hashify @dst, source
 
   watch: () ->
     @render()
@@ -40,9 +55,15 @@ minify = (code) ->
 
 renderer = (name) -> (err, glued) ->
   glued = minify(glued) if opts.minify
-  inline = name[0] == '_'
-  dir = if inline then "inline" else "public/js"
-  fs.writeFileSync(__dirname + "/../client/#{dir}/#{name}.js", glued)
+  external = name[0] != '_'
+  if external
+    hashify(__dirname + "/../client/public/js/#{name}.js", glued)
+  else
+    uglyHashedScriptFileWorkAround = (str) ->
+      str = str.replace '/js/index.js', self.get('/js/index.js')
+    
+    fs.writeFileSync(__dirname + "/../client/inline/#{name}.js", uglyHashedScriptFileWorkAround glued)
+    
 
 common = () ->
   new Glue()    
@@ -68,14 +89,28 @@ index = common()
   .include('src/client/index.js')
   .main('src/client/index.js')
         
-module.exports = 
+self = module.exports =
+
   watch: () ->
     login.watch renderer('_login')
     bootstrap.watch renderer('_bootstrap')
     index.watch renderer('index')
     css.watch()
+
   render: () ->
     login.render renderer('_login')
     bootstrap.render renderer('_bootstrap')
     index.render renderer('index')
     css.render()
+
+  get: (file) ->
+    ext = path.extname file
+    dir = path.join __dirname, "../client/public/", path.dirname(file)
+    stem = path.join dir, path.basename(file, ext)    
+    files = glob.sync(stem + "-*" + ext)
+    if files.length == 0
+      return "error: #{file} not found"
+    if files.length > 1
+      return "error: #{file} exists multiple times"
+    file = path.join(path.dirname(file), path.basename(files[0])).replace /\\/g, '/'
+    return file

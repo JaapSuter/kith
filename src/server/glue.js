@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  var Glue, bootstrap, common, css, cssify, fs, index, login, minify, opts, renderer, uglify;
+  var Glue, bootstrap, common, crypto, css, cssify, fs, glob, hashify, index, login, minify, opts, path, renderer, self, uglify;
 
   Glue = require('gluejs');
 
@@ -11,12 +11,35 @@
 
   cssify = require('clean-css');
 
+  crypto = require('crypto');
+
+  path = require('path');
+
+  glob = require('glob');
+
   opts = 'development' === process.env.NODE_ENV ? {
     minify: false,
     sourceUrls: true
   } : {
     minify: true,
     sourceUrls: false
+  };
+
+  hashify = function(file, contents) {
+    var ext, md5, prev, stem, _i, _len, _ref,
+      _this = this;
+    md5 = crypto.createHash('md5').update(contents).digest('hex');
+    ext = path.extname(file);
+    stem = path.join(path.dirname(file), path.basename(file, ext));
+    _ref = glob.sync(stem + "-*" + ext);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      prev = _ref[_i];
+      fs.unlinkSync(prev);
+    }
+    file = stem + '-' + md5 + ext;
+    return fs.writeFileSync(file, contents, 'utf8', function(err) {
+      return console.log("Wrote: " + file);
+    });
   };
 
   css = {
@@ -27,15 +50,13 @@
     },
     render: function() {
       var _this = this;
-      if (opts.minify) {
-        return fs.readFile(this.src, 'utf8', function(err, source) {
-          return fs.writeFile(_this.dst, _this.cssifyWithUglyWorkAround(source), 'utf8', function(err) {
-            return console.log('Wrote: ' + _this.dst);
-          });
-        });
-      } else {
-        return fs.copy(this.src, this.dst);
-      }
+      return fs.readFile(this.src, 'utf8', function(err, source) {
+        if (opts.minify) {
+          return hashify(_this.dst, _this.cssifyWithUglyWorkAround(source));
+        } else {
+          return hashify(_this.dst, source);
+        }
+      });
     },
     watch: function() {
       var _this = this;
@@ -56,13 +77,19 @@
 
   renderer = function(name) {
     return function(err, glued) {
-      var dir, inline;
+      var external, uglyHashedScriptFileWorkAround;
       if (opts.minify) {
         glued = minify(glued);
       }
-      inline = name[0] === '_';
-      dir = inline ? "inline" : "public/js";
-      return fs.writeFileSync(__dirname + ("/../client/" + dir + "/" + name + ".js"), glued);
+      external = name[0] !== '_';
+      if (external) {
+        return hashify(__dirname + ("/../client/public/js/" + name + ".js"), glued);
+      } else {
+        uglyHashedScriptFileWorkAround = function(str) {
+          return str = str.replace('/js/index.js', self.get('/js/index.js'));
+        };
+        return fs.writeFileSync(__dirname + ("/../client/inline/" + name + ".js"), uglyHashedScriptFileWorkAround(glued));
+      }
     };
   };
 
@@ -76,7 +103,7 @@
 
   index = common().include('src/client/lib/bacon.js').include('src/client/lib/bacon.ui.js').include('src/client/index.js').main('src/client/index.js');
 
-  module.exports = {
+  self = module.exports = {
     watch: function() {
       login.watch(renderer('_login'));
       bootstrap.watch(renderer('_bootstrap'));
@@ -88,6 +115,21 @@
       bootstrap.render(renderer('_bootstrap'));
       index.render(renderer('index'));
       return css.render();
+    },
+    get: function(file) {
+      var dir, ext, files, stem;
+      ext = path.extname(file);
+      dir = path.join(__dirname, "../client/public/", path.dirname(file));
+      stem = path.join(dir, path.basename(file, ext));
+      files = glob.sync(stem + "-*" + ext);
+      if (files.length === 0) {
+        return "error: " + file + " not found";
+      }
+      if (files.length > 1) {
+        return "error: " + file + " exists multiple times";
+      }
+      file = path.join(path.dirname(file), path.basename(files[0])).replace(/\\/g, '/');
+      return file;
     }
   };
 

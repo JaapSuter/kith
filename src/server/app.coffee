@@ -4,7 +4,8 @@ express = require('express')
 passport = require('passport')
 passloc = require('passport-local')
 flash = require('connect-flash')
-exerr = require('express-error')
+expressError = require('express-error')
+
 sha1 = require('../common/sha1.js')
 uniqueId = require(__dirname + '/../common/utils.js').uniqueId
 getLocalIPv4s = require(__dirname + '/../server/utils.js').getLocalIPv4s
@@ -16,11 +17,11 @@ else
   glue.render()
 
 strategy = new passloc.Strategy(
-  usernameField: 'cnonce',
-  passwordField: 'hash'
+  usernameField: 'cnonce'
+  passwordField: 'hash',
   (cnonce, hash, done) ->
     nonce = strategy.closeNonce()
-    if hash != sha1(nonce + strategy._password + cnonce)
+    if hash != sha1(nonce + sha1(strategy._password + cnonce))
       return done(null, false)
           
     done null, cnonce
@@ -28,7 +29,7 @@ strategy = new passloc.Strategy(
 
 strategy._password = 'ken sent me'
 strategy.openNonce = () ->
-  nonceLen = 16
+  nonceLen = 20
   @_nonce = uniqueId(nonceLen)
 
 strategy.closeNonce = () ->
@@ -43,7 +44,13 @@ passport.use(strategy)
 app = express()
 app.set('views', __dirname + '/../client/views');
 
+hook = 
+  callback: (req, res, next) -> next()
+
+oneYearInMs = 365 * 24 * 60 * 60 * 1000
+
 app.use express.logger()
+app.use hook.callback
 app.use express.compress()
 app.use express.cookieParser()
 app.use express.bodyParser()
@@ -53,10 +60,10 @@ app.use flash()
 app.use passport.initialize()
 app.use passport.session()
 app.use app.router
-app.use express.static(__dirname + '/../client/public')
+app.use express.static(__dirname + '/../client/public', { maxAge: oneYearInMs })
 
 if 'development' == app.get('env')
-  app.use(exerr.express3(contextLinesCount: 5))
+  app.use(expressError.express3(contextLinesCount: 5))
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
 if 'production' == app.get('env')
@@ -70,6 +77,7 @@ app.get '/', (req, res) ->
     error: req.flash('error')
     nonce: if req.isAuthenticated() then null else strategy.openNonce()
     env: app.get('env')
+    getHashedUrl: glue.get
 
 app.post '/login',  
   passport.authenticate 'local',
@@ -82,6 +90,36 @@ app.get '/logout', (req, res) ->
   res.redirect('/')
 
 port = process.env.PORT || 5000
-
-app.listen port, () ->
+server = app.listen port, () ->
   console.log("Listening on " + port)
+
+delay = (ms, cb) -> setTimeout cb, ms
+
+shutdown = (okCloser, errCloser) ->
+  errCloser ?= okCloser
+
+  hook.callback = (req, res, next) ->
+    res.setHeader "Connection", "close"
+    res.send 502, "Server is in the process of restarting."
+  server.close () ->
+    console.log "Server closed..."
+    okCloser()
+  timeOutInMs = 30 * 1000
+  delay timeOutInMs, ->
+    console.error "Could not close connections in time, forcefully shutting down"
+    errCloser()
+
+process.once 'SIGUSR2', ->
+  console.log 'Received kill signal (SIGUSR2), cleaning up ad shutting down.'
+  shutdown () ->  
+    console.log 'All done, killing self SIGUSR2.'
+    process.kill process.pid, 'SIGUSR2'
+
+process.on 'SIGTERM', ->
+  console.log "Received kill signal (SIGTERM), cleaning up ad shutting down."
+  shutdown (() ->
+              console.log 'All done, exiting ok.'
+              process.exit()),
+           (() ->
+             console.error "Could not close connections in time, forcefully shutting down."
+             process.exit(1))

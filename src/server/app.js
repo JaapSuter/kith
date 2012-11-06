@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  var app, exerr, express, flash, getLocalIPv4s, glue, localIPv4, passloc, passport, port, sha1, strategy, uniqueId;
+  var app, delay, express, expressError, flash, getLocalIPv4s, glue, hook, localIPv4, oneYearInMs, passloc, passport, port, server, sha1, shutdown, strategy, uniqueId;
 
   express = require('express');
 
@@ -11,7 +11,7 @@
 
   flash = require('connect-flash');
 
-  exerr = require('express-error');
+  expressError = require('express-error');
 
   sha1 = require('../common/sha1.js');
 
@@ -33,7 +33,7 @@
   }, function(cnonce, hash, done) {
     var nonce;
     nonce = strategy.closeNonce();
-    if (hash !== sha1(nonce + strategy._password + cnonce)) {
+    if (hash !== sha1(nonce + sha1(strategy._password + cnonce))) {
       return done(null, false);
     }
     return done(null, cnonce);
@@ -43,7 +43,7 @@
 
   strategy.openNonce = function() {
     var nonceLen;
-    nonceLen = 16;
+    nonceLen = 20;
     return this._nonce = uniqueId(nonceLen);
   };
 
@@ -68,7 +68,17 @@
 
   app.set('views', __dirname + '/../client/views');
 
+  hook = {
+    callback: function(req, res, next) {
+      return next();
+    }
+  };
+
+  oneYearInMs = 365 * 24 * 60 * 60 * 1000;
+
   app.use(express.logger());
+
+  app.use(hook.callback);
 
   app.use(express.compress());
 
@@ -90,10 +100,12 @@
 
   app.use(app.router);
 
-  app.use(express["static"](__dirname + '/../client/public'));
+  app.use(express["static"](__dirname + '/../client/public', {
+    maxAge: oneYearInMs
+  }));
 
   if ('development' === app.get('env')) {
-    app.use(exerr.express3({
+    app.use(expressError.express3({
       contextLinesCount: 5
     }));
     app.use(express.errorHandler({
@@ -115,7 +127,8 @@
       isAuthenticated: req.isAuthenticated(),
       error: req.flash('error'),
       nonce: req.isAuthenticated() ? null : strategy.openNonce(),
-      env: app.get('env')
+      env: app.get('env'),
+      getHashedUrl: glue.get
     });
   });
 
@@ -132,8 +145,51 @@
 
   port = process.env.PORT || 5000;
 
-  app.listen(port, function() {
+  server = app.listen(port, function() {
     return console.log("Listening on " + port);
+  });
+
+  delay = function(ms, cb) {
+    return setTimeout(cb, ms);
+  };
+
+  shutdown = function(okCloser, errCloser) {
+    var timeOutInMs;
+    if (errCloser == null) {
+      errCloser = okCloser;
+    }
+    hook.callback = function(req, res, next) {
+      res.setHeader("Connection", "close");
+      return res.send(502, "Server is in the process of restarting.");
+    };
+    server.close(function() {
+      console.log("Server closed...");
+      return okCloser();
+    });
+    timeOutInMs = 30 * 1000;
+    return delay(timeOutInMs, function() {
+      console.error("Could not close connections in time, forcefully shutting down");
+      return errCloser();
+    });
+  };
+
+  process.once('SIGUSR2', function() {
+    console.log('Received kill signal (SIGUSR2), cleaning up ad shutting down.');
+    return shutdown(function() {
+      console.log('All done, killing self SIGUSR2.');
+      return process.kill(process.pid, 'SIGUSR2');
+    });
+  });
+
+  process.on('SIGTERM', function() {
+    console.log("Received kill signal (SIGTERM), cleaning up ad shutting down.");
+    return shutdown((function() {
+      console.log('All done, exiting ok.');
+      return process.exit();
+    }), (function() {
+      console.error("Could not close connections in time, forcefully shutting down.");
+      return process.exit(1);
+    }));
   });
 
 }).call(this);
