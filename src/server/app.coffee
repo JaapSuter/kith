@@ -22,7 +22,8 @@ strategy = new passloc.Strategy(
   (cnonce, hash, done) ->
     nonce = strategy.closeNonce()
     if hash != sha1(nonce + sha1(strategy._password + cnonce))
-      return done(null, false)
+      unless 'development' == process.env.NODE_ENV
+        return done(null, false)
           
     done null, cnonce
 )
