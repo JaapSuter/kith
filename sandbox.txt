@@ -1,0 +1,33 @@
+{
+  "name": "kith",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "jade": "0.27.x",
+    "consolidate": "~0.4.0",
+    "passport": "~0.1.12",
+    "passport-local": "~0.1.6",
+    "connect-flash": "~0.1.0",
+    "express-error": "0.0.2",
+    "glob": "~3.1.14",
+    "gluejs": "~0.1.1",
+    "uglify-js2": "~2.1.5",
+    "bacon": "0.0.1",
+    "nodemon": "~0.6.23",
+    "clean-css": "~0.8.2",
+    "fs-extra": "~0.3.2",
+    "express-cache-control": "~1.0.2",
+    "cli": "~0.4.4-2",
+    "request": "~2.12.0",
+    "prettyjson": "~0.7.1",
+    "colors": "~0.6.0-1",
+    "CoffeeScriptRedux": "~2.0.0-dev"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}
+
+  

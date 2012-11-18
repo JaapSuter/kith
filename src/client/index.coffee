@@ -3,11 +3,11 @@
 module.exports.bootstrap = () ->
   
   bacon = require 'client/lib/bacon'
-
   facebookPermissions = "email, read_requests, read_friendlists
     user_groups, user_events, user_hometown, user_interests, user_likes, user_photos, user_relationships, user_relationship_details, user_subscriptions, user_videos
     friends_groups, friends_events, friends_hometown, friends_interests, friends_likes, friends_photos, friends_relationships, friends_relationship_details, friends_subscriptions, friends_videos"
 
+  facebookPermissions = ""
 
   FB.init
     appId: "517278478301891"
@@ -20,11 +20,11 @@ module.exports.bootstrap = () ->
   $facebookAuth = $('#kith-facebook-auth')
   $facebookFriends = $('#kith-facebook-friends')
 
-  onFacebookAuthStatus = (rsp) ->
-    if rsp.error
+  onFacebookAuthStatus = (res) ->
+    if res.error
       return updateFacebookAuthStatus()
   
-    if rsp.status is 'connected' and rsp.authResponse?    
+    if res.status is 'connected' and res.authResponse?    
       $facebookAuth.removeClass('grey').addClass('blue').removeAttr('disabled')
       $facebookAuth.children('.kith-caption').text('Disconnect')
       $facebookAuth.one 'click', (e) ->
@@ -49,8 +49,8 @@ module.exports.bootstrap = () ->
   updateFacebookAuthStatus()
 
   updateFriends = () ->
-    FB.api '/me/friends?limit=300', (rsp) ->
-      items = ("<li>#{friend.name}</li>" for friend in rsp.data).join('')
+    FB.api '/me/friends?limit=300', (res) ->
+      items = ("<li>#{friend.name}</li>" for friend in res.data).join('')
       $facebookFriends.html("<ul>#{items}</ul>")
 
   ### 
@@ -59,8 +59,8 @@ module.exports.bootstrap = () ->
         $('#authorize-facebook-status').text('connected')
         $('#authorize-facebook-button').hide()
 
-        FB.api '/me/friends?limit=300', (rsp) ->
-          alert(JSON.stringify(rsp.data, null, '  '))
+        FB.api '/me/friends?limit=300', (res) ->
+          alert(JSON.stringify(res.data, null, '  '))
 
       else if response.status is "not_authorized"
         $('#authorize-facebook-status').text('not yet authorized')
@@ -78,3 +78,8 @@ module.exports.bootstrap = () ->
       if response.authResponse
         alert('logged in')
   ###
+
+root = exports ? this
+
+if root.kithIndexLoaded
+  root.kithIndexLoaded()

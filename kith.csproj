@@ -13,7 +13,7 @@
     <PublishUrl>publish\</PublishUrl>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.0.1.8</ApplicationVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>false</BootstrapperEnabled>
@@ -29,35 +29,46 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include=".env" />
-    <None Include=".env-dev" />
+    <Content Include="index.js" />
+    <Content Include="sandbox.txt" />
+    <None Include="debug.cmd" />
     <None Include="dev.cmd" />
-    <None Include="src\client\_bootstrap.coffee" />
-    <None Include="src\client\lib\loader.coffee" />
-    <None Include="src\client\lib\bacon.coffee" />
-    <None Include="src\client\lib\bacon.ui.coffee" />
-    <None Include="src\client\public\fonts\fk-icons.eot" />
-    <None Include="src\client\public\fonts\fk-icons.ttf" />
-    <None Include="src\client\public\fonts\fk-icons.woff" />
-    <None Include="src\client\scss\head.scss" />
-    <None Include="src\client\scss\_fonts.scss" />
-    <None Include="Procfile-dev" />
     <None Include="package.json" />
     <None Include="Procfile" />
     <None Include="README.md" />
-    <None Include="src\client\_login.coffee" />
     <None Include="src\client\index.coffee" />
     <None Include="src\client\layouts\html.jade" />
+    <None Include="src\client\lib\bacon.coffee" />
+    <None Include="src\client\lib\bacon.ui.coffee" />
+    <None Include="src\client\lib\loader.coffee" />
+    <None Include="src\client\public\fonts\fk-icons.eot" />
+    <None Include="src\client\public\fonts\fk-icons.ttf" />
+    <None Include="src\client\public\fonts\fk-icons.woff" />
+    <None Include="src\client\public\img\Thumbs.db" />
+    <None Include="src\client\scss\head.scss" />
+    <None Include="src\client\scss\_fonts.scss" />
     <None Include="src\client\views\index.jade" />
+    <None Include="src\client\_bootstrap.coffee" />
+    <None Include="src\client\_login.coffee" />
     <None Include="src\common\sha1.coffee" />
-    <CoffeeScript Include="src\common\utils.coffee" />
-    <None Include="src\server\app.coffee" />
-    <None Include="src\server\glue.coffee" />
-    <None Include="src\server\utils.coffee" />
+    <None Include="src\common\utils.coffee" />
+    <None Include="src\server\index.coffee" />
+    <None Include="src\server\old\app.coffee" />
+    <None Include="src\server\old\cacher.coffee" />
+    <None Include="src\server\sandbox.coffee" />
+    <None Include="src\server\old\glue.coffee" />
+    <None Include="src\server\old\sandbox.coffee" />
+    <None Include="src\server\old\utils.coffee" />
+    <None Include="src\tools\google-closure\bin\COPYING" />
+    <None Include="src\tools\google-closure\bin\README" />
+    <None Include="src\tools\google-closure\google-closure.coffee" />
+    <None Include="src\tools\html-validator\html-validator.coffee" />
+    <None Include="src\tools\http-lint\html-lint.coffee" />
+    <None Include="src\tools\source-maps\sandbox.cmd" />
+    <None Include="src\tools\source-maps\sandbox.coffee" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -77,52 +88,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
-    <Content Include="src\client\index.js">
-      <DependentUpon>index.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\client\lib\bacon.js">
-      <DependentUpon>bacon.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\client\lib\bacon.ui.js">
-      <DependentUpon>bacon.ui.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\client\lib\loader.js">
-      <DependentUpon>loader.coffee</DependentUpon>
-    </Content>
     <Content Include="src\client\public\channel.html" />
-    <Content Include="src\client\public\css\head.css" />
+    <Content Include="src\client\public\favicon.ico" />
     <Content Include="src\client\public\img\glyphicons-halflings-white.png" />
     <Content Include="src\client\public\img\glyphicons-halflings.png" />
     <Content Include="src\client\public\img\syncfusion-icons-white.png" />
     <Content Include="src\client\public\img\syncfusion-icons.png" />
-    <Content Include="src\client\scss\head.css">
-      <DependentUpon>head.scss</DependentUpon>
-    </Content>
-    <Content Include="src\client\_bootstrap.js">
-      <DependentUpon>_bootstrap.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\client\_login.js">
-      <DependentUpon>_login.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\common\sha1.js">
-      <DependentUpon>sha1.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\common\utils.js">
-      <DependentUpon>utils.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\server\app.js">
-      <DependentUpon>app.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\server\glue.js">
-      <DependentUpon>glue.coffee</DependentUpon>
-    </Content>
-    <Content Include="src\server\utils.js">
-      <DependentUpon>utils.coffee</DependentUpon>
-    </Content>
+    <Content Include="src\tools\google-closure\bin\compiler.jar" />
+    <Content Include="src\tools\http-lint\bin\http-lint.c" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\client\inline\" />
     <Folder Include="src\client\public\js\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
